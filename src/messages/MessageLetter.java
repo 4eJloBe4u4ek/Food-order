@@ -14,7 +14,7 @@ public class MessageLetter extends Message implements Serializable {
 	
 	public MessageLetter( String usrNic, String txt ) {
 		
-		super( Protocol.CMD_LETTER );
+		super( Protocol.CMD_MAKE_ORDER );
 		this.usrNic = usrNic;
 		this.txt = txt;
 	}

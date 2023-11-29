@@ -9,13 +9,13 @@ public class MessageConnect extends Message implements Serializable {
 	@Serial
 	private static final long serialVersionUID = 1L;
 	
-	public String userNic;
-	public String userFullName;
+	public String userFirstName;
+	public String userLastName;
 	
 	public MessageConnect( String userNic, String userFullName ) {
 		super( Protocol.CMD_CONNECT );
-		this.userNic = userNic;
-		this.userFullName = userFullName;
+		this.userFirstName = userNic;
+		this.userLastName = userFullName;
 	}
 	
 }

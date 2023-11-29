@@ -11,11 +11,11 @@ public class MessageLetterResult extends MessageResult implements Serializable {
 	
 	public MessageLetterResult( String errorMessage ) { //Error
 		
-		super( Protocol.CMD_LETTER, errorMessage );
+		super( Protocol.CMD_MAKE_ORDER, errorMessage );
 	}
 	
 	public MessageLetterResult() { // No errors
 		
-		super( Protocol.CMD_LETTER );
+		super( Protocol.CMD_MAKE_ORDER );
 	}
 }

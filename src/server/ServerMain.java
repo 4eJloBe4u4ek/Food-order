@@ -18,7 +18,7 @@ public class ServerMain {
 	public static void main(String[] args) {
 
 		try ( ServerSocket serv = new ServerSocket( Protocol.PORT  )) {
-			System.err.println("initialized");
+			System.err.println("Server initialized");
 			ServerStopThread tester = new ServerStopThread();
 			tester.start();
 			while (true) {
@@ -86,8 +86,7 @@ public class ServerMain {
 	}
 	
 	private static final Object syncUsers = new Object();
-	private static final TreeMap<String, ServerThread> users =
-			new TreeMap<String, ServerThread> ();
+	private static final TreeMap<String, ServerThread> users = new TreeMap<String, ServerThread> ();
 	
 	public static ServerThread getUser( String userNic ) {
 		synchronized (ServerMain.syncUsers) {
@@ -138,7 +137,7 @@ class ServerStopThread extends CommandThread {
 			public boolean onCommand(int[] errorCode) {	return onCmdQuit(); }				
 		});
 		this.setDaemon(true);
-		System.err.println( "Enter \'" + cmd + "\' or \'" + cmdL + "\' to stop server\n" );
+		System.err.println("Enter '" + cmd + "' or '" + cmdL + "' to stop server\n");
 	}
 	
 	public void run() {
@@ -231,11 +230,11 @@ class ServerThread extends Thread {
 						user(( MessageUser ) msg);
 						break;
 						
-					case Protocol.CMD_CHECK_MAIL:
-						checkMail(( MessageCheckMail ) msg );
+					case Protocol.CMD_SHOW_ORDERS:
+						checkMail((MessageCheckOrder) msg );
 						break;
 						
-					case Protocol.CMD_LETTER:
+					case Protocol.CMD_MAKE_ORDER:
 						letter(( MessageLetter ) msg );
 						break;					
 				}
@@ -249,14 +248,14 @@ class ServerThread extends Thread {
 	
 	boolean connect( MessageConnect msg ) throws IOException {
 		
-		ServerThread old = register( msg.userNic, msg.userFullName );
+		ServerThread old = register( msg.userFirstName, msg.userLastName );
 		if ( old == null )
 		{
 			os.writeObject( new MessageConnectResult());
 			return true;
 		} else {
 			os.writeObject( new MessageConnectResult( 
-				"User " + old.userFullName + " already connected as " + userNic ));
+				"User " + old. + userNic + " already connected" ));
 			return false;
 		}
 	}
@@ -283,13 +282,13 @@ class ServerThread extends Thread {
 			os.writeObject( new MessageUserResult( "Unable to get users list" ));
 	}
 	
-	void checkMail( MessageCheckMail msg ) throws IOException {
+	void checkMail( MessageCheckOrder msg ) throws IOException {
 
 		String[] lts = getLetters(); 
 		if ( lts != null )
-			os.writeObject( new MessageCheckMailResult( lts ));
+			os.writeObject( new MessageCheckOrdersResult( lts ));
 		else
-			os.writeObject( new MessageCheckMailResult( "Unable to get mail" ));		
+			os.writeObject( new MessageCheckOrdersResult( "Unable to get mail" ));
 	}
 	
 	private boolean disconnected = false;
