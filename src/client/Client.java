@@ -1,6 +1,7 @@
 package client;
 
-import server.*;
+import restaurant.FoodItem;
+import restaurant.Menu;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;

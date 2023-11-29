@@ -9,6 +9,8 @@ import java.net.Socket;
 import java.util.Scanner;
 import java.util.TreeMap;
 import java.util.Vector;
+import messages.*;
+
 public class ServerMain {
 	
 	private static final int MAX_USERS = 100;
@@ -147,7 +149,7 @@ class ServerStopThread extends CommandThread {
 			} catch (InterruptedException e) {
 				break;
 			}
-			if ( fin.hasNextLine()== false )
+			if (!fin.hasNextLine())
 				continue;
 			String str = fin.nextLine();
 			if ( command( str )) {
@@ -166,15 +168,15 @@ class ServerStopThread extends CommandThread {
 
 class ServerThread extends Thread {
 	
-	private Socket sock;
-	private ObjectOutputStream 	os;
-	private ObjectInputStream 	is;
-	private InetAddress 		addr;
+	private final Socket sock;
+	private final ObjectOutputStream os;
+	private final ObjectInputStream is;
+	private final InetAddress addr;
 	
 	private String userNic = null;
 	private String userFullName;
 	
-	private Object syncLetters = new Object();
+	private final Object syncLetters = new Object();
 	private Vector<String> letters = null;
 	public void addLetter( String letter ) {	
 		synchronized ( syncLetters ) {				
@@ -207,16 +209,15 @@ class ServerThread extends Thread {
 		this.setDaemon(true);
 	}
 	
-	/*public void run() {
+	public void run() {
 		try {
 			while ( true ) {
 				Message msg = null;
 				try {
 					msg = ( Message ) is.readObject();
-				} catch (IOException e) {
-				} catch (ClassNotFoundException e) {
+				} catch (IOException | ClassNotFoundException ignored) {
 				}
-				if (msg != null) switch ( msg.getID() ) {
+                if (msg != null) switch ( msg.getID() ) {
 			
 					case Protocol.CMD_CONNECT:
 						if ( !connect( (MessageConnect) msg )) 
@@ -276,7 +277,7 @@ class ServerThread extends Thread {
 	void user( MessageUser msg ) throws IOException {
 		
 		String[] nics = ServerMain.getUsers();
-		if ( nics != null ) 
+		if ( nics != null )
 			os.writeObject( new MessageUserResult( nics ));
 		else
 			os.writeObject( new MessageUserResult( "Unable to get users list" ));
@@ -293,19 +294,21 @@ class ServerThread extends Thread {
 	
 	private boolean disconnected = false;
 	public void disconnect() {
-		if ( ! disconnected )
-		try {			
-			System.err.println( addr.getHostName() + " disconnected" );
-			unregister();
-			os.close();
-			is.close();
-			sock.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			this.interrupt();
-			disconnected = true;
+		if ( ! disconnected ){
+			try {
+				System.err.println( addr.getHostName() + " disconnected" );
+				unregister();
+				os.close();
+				is.close();
+				sock.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			} finally {
+				this.interrupt();
+				disconnected = true;
+			}
 		}
+
 	}
 	
 	private void unregister() {
@@ -321,10 +324,10 @@ class ServerThread extends Thread {
 			if ( userNic == null ) {
 				userNic = nic;
 				userFullName = name;
-				System.err.println("User \'"+ name+ "\' registered as \'"+ nic + "\'");
+				System.err.println("User '" + name+ "' registered as '" + nic + "'");
 			}
 		}
 		return old;
 	}
-}*/
+}
 
