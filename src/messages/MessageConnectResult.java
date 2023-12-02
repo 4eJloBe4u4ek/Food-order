@@ -1,8 +1,9 @@
 package messages;
 
+import server.Protocol;
+
 import java.io.Serial;
 import java.io.Serializable;
-import server.Protocol;
 
 public class MessageConnectResult extends MessageResult implements Serializable {
 	

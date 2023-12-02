@@ -94,17 +94,17 @@ public class ServerMain {
 		}		
 	}
 
-	public static ServerThread registerUser( String userNic, ServerThread user ) {
+	public static ServerThread registerUser( String userFullName, ServerThread user ) {
 		synchronized (ServerMain.syncUsers) {
-            return ServerMain.users.putIfAbsent(userNic, user);
+            return ServerMain.users.putIfAbsent(userFullName, user);
 		}		
 	}
 
-	public static void setUser(String userNic, ServerThread user ) {
+	public static void setUser(String userFullName, ServerThread user ) {
 		synchronized (ServerMain.syncUsers) {
-			ServerThread res = ServerMain.users.put( userNic, user );
+			ServerThread res = ServerMain.users.put( userFullName, user );
 			if ( user == null ) {
-				ServerMain.users.remove(userNic);
+				ServerMain.users.remove(userFullName);
 			}
 		}
 	}
@@ -171,8 +171,6 @@ class ServerThread extends Thread {
 	private final ObjectOutputStream os;
 	private final ObjectInputStream is;
 	private final InetAddress addr;
-	
-	private String userNic = null;
 	private String userFullName;
 	
 	private final Object syncLetters = new Object();
@@ -254,21 +252,19 @@ class ServerThread extends Thread {
 			os.writeObject( new MessageConnectResult());
 			return true;
 		} else {
-			os.writeObject( new MessageConnectResult( 
-				"User " + old. + userNic + " already connected" ));
+			os.writeObject( new MessageConnectResult("User " + msg.userFirstName + " " + msg.userLastName + " already connected" ));
 			return false;
 		}
 	}
 	
 	void letter( MessageLetter msg ) throws IOException {
 		
-		ServerThread user = ServerMain.getUser( msg.usrNic );
+		ServerThread user = ServerMain.getUser( msg.userFullName );
 		if ( user == null )
 		{
-			os.writeObject( new MessageLetterResult( 
-					"User " + msg.usrNic + " is not found" ));
+			os.writeObject( new MessageLetterResult("User " + msg.userFullName + " is not found" ));
 		} else {
-			user.addLetter( userNic + ": " + msg.txt );
+			user.addLetter( userFullName + ": " + msg.txt );
 			os.writeObject( new MessageLetterResult());
 		}
 	}
@@ -311,19 +307,18 @@ class ServerThread extends Thread {
 	}
 	
 	private void unregister() {
-		if ( userNic != null ) {
-			ServerMain.setUser( userNic, null );			
-			userNic = null;
+		if ( userFullName != null ) {
+			ServerMain.setUser( userFullName, null );
+			userFullName = null;
 		}		
 	}
 	
-	private ServerThread register( String nic, String name ) {
-		ServerThread old = ServerMain.registerUser( nic, this );
+	private ServerThread register( String userFirstName, String userSecondName ) {
+		ServerThread old = ServerMain.registerUser( userFullName, this );
 		if ( old == null ) {
-			if ( userNic == null ) {
-				userNic = nic;
-				userFullName = name;
-				System.err.println("User '" + name+ "' registered as '" + nic + "'");
+			if ( userFullName == null ) {
+				userFullName = userFirstName + " " + userSecondName;
+				System.err.println("User '" + userFullName + "' registered");
 			}
 		}
 		return old;

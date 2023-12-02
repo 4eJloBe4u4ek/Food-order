@@ -9,13 +9,13 @@ public class MessageLetter extends Message implements Serializable {
 	@Serial
 	private static final long serialVersionUID = 1L;
 	
-	public String usrNic;
+	public String userFullName;
 	public String txt;
 	
-	public MessageLetter( String usrNic, String txt ) {
+	public MessageLetter( String userFullName, String txt ) {
 		
 		super( Protocol.CMD_MAKE_ORDER );
-		this.usrNic = usrNic;
+		this.userFullName = userFullName;
 		this.txt = txt;
 	}
 	
